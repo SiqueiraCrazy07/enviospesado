@@ -48,8 +48,26 @@
     <script type="text/babel">
         const { useState, useEffect } = React;
 
-        // --- ÍCONES SVG (Substituindo Lucide-React) ---
-        // Criamos componentes SVG simples para não depender de build systems
+        // --- COMPONENTE LOGO UX (VETORIAL/SVG - ULTRA FIEL / BOLD) ---
+        const LogoUX = ({ className }) => (
+            <svg 
+                viewBox="0 0 280 100" 
+                className={className} 
+                fill="currentColor" 
+                xmlns="http://www.w3.org/2000/svg" 
+                aria-label="Logo UX"
+                preserveAspectRatio="xMidYMid meet"
+            >
+                {/* Letra U */}
+                <path d="M0 0 L38 0 L38 62 C38 80 46 84 55 84 C64 84 72 80 72 62 L72 0 L110 0 L110 62 C110 94 85 100 55 100 C25 100 0 94 0 62 Z" />
+                {/* Letra X */}
+                <path d="M125 0 L165 0 L180 30 L195 0 L235 0 L200 50 L240 100 L200 100 L180 70 L160 100 L120 100 L160 50 Z" />
+                {/* Ponto . */}
+                <rect x="245" y="70" width="30" height="30" />
+            </svg>
+        );
+
+        // --- ÍCONES SVG ---
         const IconBase = ({ children, size = 24, className = "", ...props }) => (
             <svg 
                 xmlns="http://www.w3.org/2000/svg" 
@@ -94,6 +112,8 @@
         const Anchor = (props) => <IconBase {...props}><circle cx="12" cy="5" r="3"/><line x1="12" y1="22" x2="12" y2="8"/><path d="M5 12H2a10 10 0 0 0 20 0h-3"/></IconBase>;
         const Info = (props) => <IconBase {...props}><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></IconBase>;
         const X = (props) => <IconBase {...props}><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></IconBase>;
+        const ArrowLeft = (props) => <IconBase {...props}><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></IconBase>;
+        const PanelLeft = (props) => <IconBase {...props}><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><line x1="9" y1="3" x2="9" y2="21"/></IconBase>;
 
         // Cores e Estilos Base dos Nós do Fluxograma
         const COLORS = {
@@ -414,81 +434,87 @@
         function App() {
             const [activeTab, setActiveTab] = useState('flowchart'); 
             const [selectedNode, setSelectedNode] = useState(null);
+            const [isSidebarOpen, setIsSidebarOpen] = useState(true);
             
+            // Largura Base: 1400px
+            // Centro: 700px
+            // Centro Inbound (Esquerda): 370px (Com ajuste de margem)
+            // Centro Outbound (Direita): 1030px (Com ajuste de margem)
+
             const nodes = [
-                // BLOCO 1: TRANSFERÊNCIA
+                // BLOCO 1: TRANSFERÊNCIA (Inbound - Centrado em 370)
                 { 
-                    id: 'n1', type: 'transfer', x: 250, y: 150, 
+                    id: 'n1', type: 'transfer', x: 370, y: 150, 
                     label: 'Origem (Seller)', icon: Package, system: 'ERP Seller', 
                     shortDesc: 'Emissão de Nota de Remessa', 
                     details: 'O Seller inicia o processo emitindo uma Nota Fiscal de Remessa para Depósito Fechado ou Armazém Geral (conforme validação fiscal). Esta ação sinaliza o início do abastecimento da base UX em Barueri, transferindo a custódia logística.' 
                 },
                 { 
-                    id: 'n2', type: 'transfer', x: 250, y: 300, 
+                    id: 'n2', type: 'transfer', x: 370, y: 300, 
                     label: 'Integrações', icon: Server, system: 'API Trucks / WMX', 
                     shortDesc: 'Solicitação de Coleta & Dados', 
                     details: 'O sistema realiza duas comunicações críticas: 1) Envia dados da carga para o Trucks (TMS) gerar a ordem de coleta; 2) Envia o ASN (Advanced Shipping Notice) para o WMX (WMS) preparar o recebimento, garantindo que o CD saiba exatamente o que está chegando.' 
                 },
                 { 
-                    id: 'n3', type: 'transfer', x: 250, y: 450, 
+                    id: 'n3', type: 'transfer', x: 370, y: 450, 
                     label: 'Transporte Inbound', icon: Truck, system: 'Logística', 
                     shortDesc: 'Coleta e Viagem', 
                     details: 'Transportadora parceira, acionada pelo Trucks, coleta a mercadoria no CD do Seller e realiza o transporte (Linehaul) até o Centro de Distribuição da UX em Barueri/SP. O rastreamento é monitorado até a chegada na doca.' 
                 },
                 { 
-                    id: 'n4', type: 'transfer', x: 250, y: 600, 
+                    id: 'n4', type: 'transfer', x: 370, y: 600, 
                     label: 'Recebimento', icon: Database, system: 'WMX', 
                     shortDesc: 'Conferência Física', 
                     details: 'No CD UX, a carga passa por conferência cega (blind check) para validar quantidades e integridade física contra o XML da nota. Após validação, o WMX realiza a entrada fiscal e endereçamento do produto.' 
                 },
                 { 
-                    id: 'n5', type: 'transfer', x: 250, y: 750, 
+                    id: 'n5', type: 'transfer', x: 370, y: 750, 
                     label: 'Estoque Disponível', icon: CheckCircle, system: 'Site / MktPlace', 
                     shortDesc: 'Saldo Transitório', 
                     details: 'O produto é classificado como "Estoque Transitório". O saldo é integrado ao Marketplace, ativando a oferta com o SLA de entrega reduzido (Ex: Até 3 dias para SP), melhorando instantaneamente o Buybox e a conversão.' 
                 },
 
-                // BLOCO 2: VENDA
+                // BLOCO 2: VENDA (Outbound - Centrado em 1030)
                 { 
-                    id: 'n6', type: 'sale', x: 800, y: 150, 
+                    id: 'n6', type: 'sale', x: 1030, y: 150, 
                     label: 'Pedido (MktPlace)', icon: ShoppingCart, system: 'Mirakl / VTEX', 
                     shortDesc: 'Compra confirmada', 
                     details: 'O cliente final realiza a compra no site. O pedido é capturado pela plataforma (Mirakl) e desce para o sistema de gestão de pedidos (OMS) para processamento financeiro e fraude.' 
                 },
                 { 
-                    id: 'n7', type: 'sale', x: 800, y: 300, 
+                    id: 'n7', type: 'sale', x: 1030, y: 300, 
                     label: 'Orquestrador', icon: Server, system: 'Fusion', 
                     shortDesc: 'Roteamento Pesado', 
                     details: 'O Fusion (OMS) analisa o pedido. Ao identificar SKUs marcados como "Envios Pesado", ele divide o pedido se necessário e roteia a ordem de serviço especificamente para o fluxo de expedição da base Barueri.' 
                 },
                 { 
-                    id: 'n8', type: 'sale', x: 650, y: 450, 
+                    id: 'n8', type: 'sale', x: 870, y: 450, // 1030 - 160
                     label: 'Separação', icon: Package, system: 'WMX', 
                     shortDesc: 'Pick & Pack', 
                     details: 'O WMX recebe a ordem de venda, gera a onda de separação (wave picking), orienta os operadores para a coleta dos itens no armazém e finaliza a embalagem (packing) na doca de expedição.' 
                 },
                 { 
-                    id: 'n9', type: 'sale', x: 950, y: 450, 
+                    id: 'n9', type: 'sale', x: 1190, y: 450, // 1030 + 160
                     label: 'Gestão Frete', icon: FileText, system: 'Trucks', 
                     shortDesc: 'Emissão CTE', 
                     details: 'Paralelamente à separação, o Trucks recebe os dados da venda, seleciona a melhor transportadora (roteirização), emite o CTe e a etiqueta de transporte, e agenda a coleta na doca da UX.' 
                 },
                 { 
-                    id: 'n10', type: 'sale', x: 800, y: 600, 
+                    id: 'n10', type: 'sale', x: 1030, y: 600, 
                     label: 'Coleta & Last Mile', icon: Truck, system: 'Transportadora', 
                     shortDesc: 'Expedição', 
                     details: 'A transportadora de Last Mile coleta os pedidos já separados e etiquetados na doca da UX e inicia o roteiro de entrega urbana para o endereço do cliente final.' 
                 },
                 { 
-                    id: 'n11', type: 'sale', x: 800, y: 750, 
+                    id: 'n11', type: 'sale', x: 1030, y: 750, 
                     label: 'Entrega Final', icon: CheckCircle, system: 'OndeTah', 
                     shortDesc: 'Baixa no App', 
                     details: 'O motorista realiza a entrega e confirma via aplicativo móvel (POD - Proof of Delivery). O sistema OndeTah atualiza o status para "Entregue" no Marketplace e notifica o Seller da conclusão.' 
                 },
 
-                // CONTROLE
+                // CONTROLE (Centro Global - 700)
                 { 
-                    id: 'n12', type: 'control', x: 525, y: 850, 
+                    id: 'n12', type: 'control', x: 700, y: 850, 
                     label: 'Monitoramento', icon: RefreshCw, system: 'Automático', 
                     shortDesc: 'Gatilho Reposição', 
                     details: 'Um algoritmo monitora a velocidade de vendas (giro) versus o saldo atual. Quando o estoque atinge o nível mínimo de segurança, um alerta é disparado sugerindo ao Seller uma nova remessa de abastecimento.' 
@@ -514,8 +540,8 @@
                 <div className="flex flex-col h-screen font-sans text-slate-800 overflow-hidden">
                     
                     {/* Header da Aplicação */}
-                    <header className="bg-white border-b border-slate-200 px-6 py-3 shadow-sm flex justify-between items-center z-30">
-                        <div className="flex items-center gap-6">
+                    <header className="bg-white border-b border-slate-200 px-6 py-3 shadow-sm flex flex-wrap justify-between items-center z-30">
+                        <div className="flex items-center gap-6 flex-wrap">
                             {/* Logos Branding (Visíveis na Navbar) */}
                             <div className="flex items-center gap-4 border-r border-slate-200 pr-6 h-12">
                                 <img 
@@ -528,33 +554,27 @@
                                 
                                 <div className="h-6 w-px bg-slate-200 mx-2"></div>
                                 
-                                <img 
-                                    src="image_6bf0d7.png" 
-                                    alt="UX" 
-                                    className="h-3/4 w-auto object-contain opacity-90"
-                                    onError={(e) => { e.target.style.display = 'none'; }} 
-                                />
-                                <span className="hidden font-bold text-black" id="fallback-ux">UX</span>
+                                <LogoUX className="h-3/4 w-auto text-black" />
                             </div>
 
-                            <div>
+                            <div className="hidden sm:block">
                                 <h1 className="text-lg font-bold text-slate-900 leading-none">Projeto Envios</h1>
                                 <p className="text-xs text-slate-500 font-medium">Operação Pesado SP</p>
                             </div>
                         </div>
                         
-                        <div className="bg-slate-100 p-1 rounded-lg flex text-sm font-semibold shadow-inner">
+                        <div className="bg-slate-100 p-1 rounded-lg flex text-sm font-semibold shadow-inner mt-2 sm:mt-0">
                             <button 
                                 onClick={() => setActiveTab('flowchart')}
                                 className={`px-4 py-2 rounded-md transition-all flex items-center gap-2 ${activeTab === 'flowchart' ? 'bg-white text-blue-600 shadow-sm ring-1 ring-black/5' : 'text-slate-500 hover:text-slate-700'}`}
                             >
-                                <Layout size={16} /> Visão Técnica
+                                <Layout size={16} /> <span className="hidden md:inline">Visão Técnica</span>
                             </button>
                             <button 
                                 onClick={() => setActiveTab('presentation')}
                                 className={`px-4 py-2 rounded-md transition-all flex items-center gap-2 ${activeTab === 'presentation' ? 'bg-white text-amber-600 shadow-sm ring-1 ring-black/5' : 'text-slate-500 hover:text-slate-700'}`}
                             >
-                                <Users size={16} /> Visão Comercial
+                                <Users size={16} /> <span className="hidden md:inline">Visão Comercial</span>
                             </button>
                         </div>
                     </header>
@@ -565,17 +585,35 @@
                         ) : (
                             <>
                                 {/* Sidebar Detalhes */}
-                                <div className="w-96 bg-white border-r border-slate-200 shadow-xl z-20 flex flex-col overflow-hidden transition-all">
-                                    <div className="p-6 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
+                                <div className={`
+                                    bg-white border-r border-slate-200 shadow-xl z-20 flex flex-col overflow-hidden transition-all duration-300 absolute md:relative h-full
+                                    ${isSidebarOpen ? 'w-96 translate-x-0' : 'w-0 -translate-x-full opacity-0 pointer-events-none'}
+                                `}>
+                                    <div className="p-6 bg-slate-50 border-b border-slate-200 flex justify-between items-center whitespace-nowrap">
                                         <div>
                                             <h2 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-1">Painel de Detalhes</h2>
-                                            <p className="text-xs text-slate-500">Selecione um nó para inspecionar</p>
+                                            <p className="text-xs text-slate-500">
+                                                {selectedNode ? "Inspeção de nó" : "Visão Geral"}
+                                            </p>
                                         </div>
-                                        {selectedNode && (
-                                            <button onClick={() => setSelectedNode(null)} className="p-1 hover:bg-slate-100 rounded text-slate-400 hover:text-slate-600">
+                                        <div className="flex items-center gap-2">
+                                            {selectedNode && (
+                                                <button 
+                                                    onClick={() => setSelectedNode(null)} 
+                                                    className="p-1.5 hover:bg-white rounded-full text-slate-400 hover:text-blue-600 transition-colors shadow-sm border border-transparent hover:border-slate-200"
+                                                    title="Voltar para Visão Geral"
+                                                >
+                                                    <ArrowLeft size={16} />
+                                                </button>
+                                            )}
+                                            <button 
+                                                onClick={() => setIsSidebarOpen(false)} 
+                                                className="p-1.5 hover:bg-red-50 rounded-full text-slate-400 hover:text-red-500 transition-colors"
+                                                title="Fechar Painel"
+                                            >
                                                 <X size={18} />
                                             </button>
-                                        )}
+                                        </div>
                                     </div>
                                     
                                     <div className="flex-1 overflow-y-auto p-6">
@@ -660,7 +698,18 @@
                                     className="flex-1 overflow-auto relative bg-slate-100 cursor-grab active:cursor-grabbing"
                                     onClick={() => setSelectedNode(null)} 
                                 >
-                                    <div className="relative min-w-[1200px] min-h-[1000px] mx-auto py-10">
+                                    {/* Botão Flutuante para Reabrir Painel */}
+                                    {!isSidebarOpen && (
+                                        <button 
+                                            onClick={(e) => { e.stopPropagation(); setIsSidebarOpen(true); }}
+                                            className="absolute top-4 left-4 z-50 bg-white p-3 rounded-full shadow-lg text-slate-600 hover:text-blue-600 hover:scale-110 transition-all border border-slate-200"
+                                            title="Abrir Painel de Detalhes"
+                                        >
+                                            <PanelLeft size={24} />
+                                        </button>
+                                    )}
+
+                                    <div className="relative min-w-[1400px] min-h-[1000px] mx-auto py-10">
                                         
                                         {/* Título do Fluxograma */}
                                         <div className="absolute top-0 left-0 w-full text-center mt-4 pointer-events-none z-10">
@@ -697,14 +746,14 @@
                                             })}
                                             
                                             <path 
-                                                d="M 525 850 C 100 850, 100 150, 250 150" 
+                                                d="M 700 850 C 100 850, 100 150, 370 150" 
                                                 fill="none" 
                                                 stroke="#a855f7" 
                                                 strokeWidth="2" 
                                                 strokeDasharray="8,8"
                                                 className="opacity-30"
                                             />
-                                            <text x="130" y="500" className="text-[10px] fill-purple-400 font-bold -rotate-90 tracking-widest">GATILHO DE REPOSIÇÃO</text>
+                                            <text x="180" y="500" className="text-[10px] fill-purple-400 font-bold -rotate-90 tracking-widest">GATILHO DE REPOSIÇÃO</text>
                                         </svg>
 
                                         {nodes.map(node => (
